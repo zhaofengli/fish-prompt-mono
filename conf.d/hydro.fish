@@ -6,6 +6,14 @@ function $_hydro_git --on-variable $_hydro_git
     commandline --function repaint
 end
 
+function _hydro_hostname --on-variable hostname
+	if test -n "$SSH_CLIENT"
+		set --global _hydro_hostname (hostname)":"
+	else
+		set --global _hydro_hostname ""
+	end
+end
+
 function _hydro_pwd --on-variable PWD
     set --local root (command git rev-parse --show-toplevel 2>/dev/null |
         string replace --all --regex -- "^.*/" "")
@@ -38,6 +46,7 @@ end
 function _hydro_prompt --on-event fish_prompt
     set --local last_status $pipestatus
     set --query _hydro_pwd || _hydro_pwd
+    set --query _hydro_hostname || _hydro_hostname
     set --global _hydro_prompt "$_hydro_color_prompt$hydro_symbol_prompt"
 
     for code in $last_status
